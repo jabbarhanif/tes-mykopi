@@ -30,5 +30,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/promotions/create', [PromotionController::class, 'create'])->name('promotions.create');
     Route::post('/promotions', [PromotionController::class, 'store'])->name('promotions.store');
 });
+Route::middleware(['auth'])->group(function () {
+    // halaman untuk role marketing
+    Route::get('/admin/promotions', [PromotionController::class, 'adminIndex'])
+        ->name('admin.promotions.index');
+});
+
+Route::put('/admin/promotions/{promotion}', [PromotionController::class, 'adminUpdate'])
+    ->middleware('auth')
+    ->name('admin.promotions.update');
+
+Route::get('/admin/dashboard', [PromotionController::class, 'dashboard'])
+    ->middleware('auth')
+    ->name('admin.dashboard');
 
 require __DIR__ . '/auth.php';

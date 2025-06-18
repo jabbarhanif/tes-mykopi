@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Outlet extends Model
 {
     //
+    protected $fillable = [
+        'id',
+        'name',
+        'location',
+    ];
 
     public function users()
     {

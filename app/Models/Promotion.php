@@ -15,7 +15,9 @@ class Promotion extends Model
         'promo_date',
         'estimated_traffic',
         'status',
+        'admin_note', // <= ditambahkan
     ];
+
 
     public function user()
     {

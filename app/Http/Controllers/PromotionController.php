@@ -8,6 +8,7 @@ use App\Models\Outlet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class PromotionController extends Controller
 {
@@ -124,5 +125,47 @@ class PromotionController extends Controller
         $promotion->update($data);
 
         return back()->with('success', 'Laporan diperbarui.');
+    }
+
+
+    public function dashboard()
+    {
+        $user = Auth::user();
+        if ($user->role !== 'marketing') {
+            abort(403);
+        }
+
+        // Total laporan
+        $totalReports = Promotion::count();
+
+        // Laporan per outlet
+        $reportsPerOutlet = DB::table('promotions')
+            ->join('outlets', 'promotions.outlet_id', '=', 'outlets.id')
+            ->select('outlets.name as outlet', DB::raw('count(*) as total'))
+            ->groupBy('outlet')
+            ->get();
+
+        // Laporan per hari (7 hari terakhir)
+        $dailyReports = DB::table('promotions')
+            ->select(DB::raw('DATE(promo_date) as date'), DB::raw('count(*) as total'))
+            ->where('promo_date', '>=', now()->subDays(7))
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // Jenis promo paling populer
+        $promoTypes = DB::table('promotions')
+            ->select('promo_type', DB::raw('count(*) as total'))
+            ->groupBy('promo_type')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
+        return inertia('Admin/Dashboard', [
+            'totalReports' => $totalReports,
+            'reportsPerOutlet' => $reportsPerOutlet,
+            'dailyReports' => $dailyReports,
+            'promoTypes' => $promoTypes,
+        ]);
     }
 }

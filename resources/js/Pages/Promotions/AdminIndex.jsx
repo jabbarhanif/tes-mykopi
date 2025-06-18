@@ -95,12 +95,13 @@ export default function AdminIndex() {
                                 const status = formData.get('status')
                                 const admin_note = formData.get('admin_note')
 
-                                window.axios.put(`/admin/promotions/${promo.id}`, {
-                                    status,
-                                    admin_note,
-                                }).then(() => {
+                                window.axios.put(
+                                    route('admin.promotions.update', { promotion: promo.id }),
+                                    { status, admin_note }
+                                ).then(() => {
                                     window.location.reload()
                                 })
+
                             }}
                             className="mt-3 border-t pt-2 space-y-2"
                         >
