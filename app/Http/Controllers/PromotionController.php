@@ -41,10 +41,15 @@ class PromotionController extends Controller
 
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $photo) {
-                $path = $photo->store('public/promotions');
+                // dd($photo);
+                // die;
+                // $path = $photo->store('public/promotions');
+                $filename = uniqid() . '.' . $photo->getClientOriginalExtension();
+                $photo->move(storage_path('app/public/promotions'), $filename);
+
                 PromotionPhoto::create([
                     'promotion_id' => $promotion->id,
-                    'path'         => Storage::url($path),
+                    'path'         => '/storage/promotions/' . $filename,
                 ]);
             }
         }
