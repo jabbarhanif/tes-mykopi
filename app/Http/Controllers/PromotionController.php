@@ -50,17 +50,29 @@ class PromotionController extends Controller
         return redirect()->route('promotions.index')->with('success', 'Laporan promosi berhasil dikirim.');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
 
-        $promotions = Promotion::with('photos')
-            ->where('user_id', $user->id)
-            ->latest()
-            ->get();
+        $query = Promotion::with('photos')
+            ->where('user_id', $user->id);
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('promo_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('promo_date', '<=', $request->end_date);
+        }
+
+        $promotions = $query->latest()->get();
 
         return inertia('Promotions/Index', [
             'promotions' => $promotions,
+            'filters' => [
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+            ],
         ]);
     }
 }
