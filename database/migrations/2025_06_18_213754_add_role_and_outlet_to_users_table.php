@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('outlets', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('location')->nullable();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->enum('role', ['outlet', 'marketing', 'manager'])->default('outlet');
+            $table->foreignId('outlet_id')->nullable()->constrained()->onDelete('set null');
         });
     }
 
@@ -24,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('outlets');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 };
