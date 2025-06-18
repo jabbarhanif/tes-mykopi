@@ -110,4 +110,19 @@ class PromotionController extends Controller
             ],
         ]);
     }
+    public function adminUpdate(Request $request, Promotion $promotion)
+    {
+        if (Auth::user()->role !== 'marketing') {
+            abort(403);
+        }
+
+        $data = $request->validate([
+            'status' => 'required|in:pending,reviewed,approved',
+            'admin_note' => 'nullable|string',
+        ]);
+
+        $promotion->update($data);
+
+        return back()->with('success', 'Laporan diperbarui.');
+    }
 }
