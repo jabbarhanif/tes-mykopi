@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Promotion;
 use App\Models\PromotionPhoto;
+use App\Models\Outlet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -72,6 +73,40 @@ class PromotionController extends Controller
             'filters' => [
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
+            ],
+        ]);
+    }
+
+    public function adminIndex(Request $request)
+    {
+        $user = Auth::user();
+        if ($user->role !== 'marketing') {
+            abort(403);
+        }
+
+        $query = Promotion::with(['photos', 'user', 'outlet']);
+
+        if ($request->filled('outlet_id')) {
+            $query->where('outlet_id', $request->outlet_id);
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('promo_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('promo_date', '<=', $request->end_date);
+        }
+
+        $promotions = $query->latest()->get();
+
+        return inertia('Promotions/AdminIndex', [
+            'promotions' => $promotions,
+            'outlets' => Outlet::all(['id', 'name']),
+            'filters' => [
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'outlet_id' => $request->outlet_id,
             ],
         ]);
     }
