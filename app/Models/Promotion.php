@@ -7,6 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Promotion extends Model
 {
     //
+    protected $fillable = [
+        'user_id',
+        'outlet_id',
+        'promo_type',
+        'description',
+        'promo_date',
+        'estimated_traffic',
+        'status',
+    ];
 
     public function user()
     {
