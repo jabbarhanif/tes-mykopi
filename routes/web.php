@@ -5,6 +5,10 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\PromotionController;
+use \Illuminate\Http\Request;
+use App\Exports\PromotionsExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Auth; // <-- Tambahkan ini
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -43,5 +47,13 @@ Route::put('/admin/promotions/{promotion}', [PromotionController::class, 'adminU
 Route::get('/admin/dashboard', [PromotionController::class, 'dashboard'])
     ->middleware('auth')
     ->name('admin.dashboard');
+
+
+Route::get('/admin/promotions/export', function (Request $request) {
+    if (Auth::user()->role !== 'marketing') abort(403);
+
+    $filters = $request->only(['outlet_id', 'start_date', 'end_date']);
+    return Excel::download(new PromotionsExport($filters), 'laporan_promosi.xlsx');
+})->name('admin.promotions.export');
 
 require __DIR__ . '/auth.php';
