@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
     plugins: [
@@ -14,5 +15,10 @@ export default defineConfig({
     server: {
         host: '192.168.1.4',
         port: 5175,
-    }
+    },
+    resolve: {
+        alias: {
+            '@assets': path.resolve(__dirname, 'public'),
+        },
+    },
 });

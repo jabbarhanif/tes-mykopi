@@ -173,4 +173,26 @@ class PromotionController extends Controller
             'promoTypes' => $promoTypes,
         ]);
     }
+
+    public function destroy(Promotion $promotion)
+    {
+        $user = Auth::user();
+
+        // Pastikan hanya user pemilik yang bisa hapus
+        if ($user->id !== $promotion->user_id) {
+            abort(403);
+        }
+
+        // Hapus semua foto terkait
+        foreach ($promotion->photos as $photo) {
+            if ($photo->path && file_exists(public_path($photo->path))) {
+                unlink(public_path($photo->path));
+            }
+            $photo->delete();
+        }
+
+        $promotion->delete();
+
+        return back()->with('success', 'Laporan berhasil dihapus.');
+    }
 }

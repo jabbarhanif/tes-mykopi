@@ -56,4 +56,8 @@ Route::get('/admin/promotions/export', function (Request $request) {
     return Excel::download(new PromotionsExport($filters), 'laporan_promosi.xlsx');
 })->name('admin.promotions.export');
 
+Route::delete('/promotions/{promotion}', [PromotionController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('promotions.destroy');
+
 require __DIR__ . '/auth.php';
