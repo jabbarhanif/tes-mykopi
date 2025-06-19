@@ -9,6 +9,7 @@ use \Illuminate\Http\Request;
 use App\Exports\PromotionsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth; // <-- Tambahkan ini
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -19,9 +20,11 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -59,5 +62,7 @@ Route::get('/admin/promotions/export', function (Request $request) {
 Route::delete('/promotions/{promotion}', [PromotionController::class, 'destroy'])
     ->middleware('auth')
     ->name('promotions.destroy');
+Route::put('/promotions/{promotion}', [PromotionController::class, 'update'])->name('promotions.update');
+
 
 require __DIR__ . '/auth.php';

@@ -3,7 +3,7 @@ import logoheader from '@assets/Assets/img/logo.png';
 export default function ApplicationLogo(props) {
     return (
         <div className="flex items-center">
-            <img src={logoheader} alt="My Kopi O!" className="w-[120px] h-auto block" />
+            <img src={logoheader} alt="My Kopi O!" className="w-[60px] h-auto block" />
         </div>
         // <svg
         //     {...props}

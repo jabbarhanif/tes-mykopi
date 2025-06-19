@@ -45,6 +45,7 @@ class PromotionController extends Controller
                 // die;
                 // $path = $photo->store('public/promotions');
                 $filename = uniqid() . '.' . $photo->getClientOriginalExtension();
+                // dd($photo->move(storage_path('app/public/promotions'), $filename));
                 $photo->move(storage_path('app/public/promotions'), $filename);
 
                 PromotionPhoto::create([
@@ -177,11 +178,15 @@ class PromotionController extends Controller
     public function destroy(Promotion $promotion)
     {
         $user = Auth::user();
-
+        // dd($promotion->status);
         // Pastikan hanya user pemilik yang bisa hapus
         if ($user->id !== $promotion->user_id) {
             abort(403);
         }
+        if ($promotion->status === 'approved') {
+            return back()->with('error', 'Laporan yang sudah disetujui tidak bisa dihapus.');
+        }
+
 
         // Hapus semua foto terkait
         foreach ($promotion->photos as $photo) {
@@ -194,5 +199,22 @@ class PromotionController extends Controller
         $promotion->delete();
 
         return back()->with('success', 'Laporan berhasil dihapus.');
+    }
+    public function update(Request $request, Promotion $promotion)
+    {
+        if (auth()->id() !== $promotion->user_id || $promotion->status === 'approved') {
+            abort(403);
+        }
+
+        $data = $request->validate([
+            'promo_type' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'promo_date' => 'required|date',
+            'estimated_traffic' => 'nullable|integer',
+        ]);
+
+        $promotion->update($data);
+
+        return back()->with('success', 'Laporan berhasil diperbarui.');
     }
 }

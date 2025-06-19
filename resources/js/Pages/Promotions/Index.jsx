@@ -19,6 +19,29 @@ export default function Index() {
         })
     }
 
+    const [editing, setEditing] = React.useState(null)
+    const [editForm, setEditForm] = React.useState({
+        promo_type: '',
+        description: '',
+        promo_date: '',
+        estimated_traffic: '',
+    })
+    const openEditModal = (promo) => {
+        setEditing(promo.id)
+        setEditForm({
+            promo_type: promo.promo_type,
+            description: promo.description || '',
+            promo_date: promo.promo_date,
+            estimated_traffic: promo.estimated_traffic || '',
+        })
+    }
+    const handleEditSubmit = (e) => {
+        e.preventDefault()
+        Inertia.put(`/promotions/${editing}`, editForm, {
+            onSuccess: () => setEditing(null),
+        })
+    }
+
     return (
         <div className="max-w-4xl mx-auto p-6 text-white bg-zinc-900 min-h-screen">
             <div className="flex justify-between items-center mb-6">
@@ -96,7 +119,16 @@ export default function Index() {
                                 ))}
                             </div>
                         )}
-                        <button
+                        <div className="text-xs text-zinc-400">
+                            Status • {promo.status ?? 'N/A'}
+                        </div>
+                        <div className="text-xs text-zinc-400">
+                            Catatan/Komentar :
+                        </div>
+                        <div className="text-xs text-zinc-400">
+                            • {promo.admin_note ?? 'N/A'}
+                        </div>
+                        {promo.status !== "approved" && (<button
                             onClick={() => {
                                 if (confirm('Yakin ingin menghapus laporan ini?')) {
                                     Inertia.delete(route('promotions.destroy', promo.id))
@@ -106,10 +138,72 @@ export default function Index() {
                         >
                             🗑 Hapus Laporan
                         </button>
+                        )}
+                        {promo.status !== "approved" && (
+                            <button
+                                onClick={() => openEditModal(promo)}
+                                className="mt-2 inline-block bg-yellow-600 hover:bg-yellow-700 text-white text-sm px-3 py-1 rounded shadow ml-2"
+                            >
+                                ✏️ Edit Laporan
+                            </button>
+                        )}
 
                     </div>
                 ))}
             </div>
+            {editing && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-zinc-800 p-6 rounded-lg w-full max-w-lg shadow-lg border border-zinc-600">
+                        <h2 className="text-xl font-bold text-fuchsia-300 mb-4">Edit Laporan</h2>
+                        <form onSubmit={handleEditSubmit} className="space-y-4 text-white">
+                            <div>
+                                <label className="block text-sm">Jenis Promosi</label>
+                                <input
+                                    type="text"
+                                    value={editForm.promo_type}
+                                    onChange={(e) => setEditForm({ ...editForm, promo_type: e.target.value })}
+                                    className="w-full p-2 rounded bg-zinc-700 border border-zinc-600"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm">Deskripsi</label>
+                                <textarea
+                                    value={editForm.description}
+                                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                                    className="w-full p-2 rounded bg-zinc-700 border border-zinc-600"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm">Tanggal Promosi</label>
+                                <input
+                                    type="date"
+                                    value={editForm.promo_date}
+                                    onChange={(e) => setEditForm({ ...editForm, promo_date: e.target.value })}
+                                    className="w-full p-2 rounded bg-zinc-700 border border-zinc-600"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm">Estimasi Trafik</label>
+                                <input
+                                    type="number"
+                                    value={editForm.estimated_traffic}
+                                    onChange={(e) => setEditForm({ ...editForm, estimated_traffic: e.target.value })}
+                                    className="w-full p-2 rounded bg-zinc-700 border border-zinc-600"
+                                />
+                            </div>
+                            <div className="flex justify-end space-x-2 pt-2">
+                                <button type="button" onClick={() => setEditing(null)} className="px-4 py-2 rounded bg-zinc-600">
+                                    ❌ Batal
+                                </button>
+                                <button type="submit" className="px-4 py-2 rounded bg-green-600 hover:bg-green-700">
+                                    ✅ Simpan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
         </div>
     )
 }

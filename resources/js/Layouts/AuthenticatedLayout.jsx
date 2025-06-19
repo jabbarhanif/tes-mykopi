@@ -12,14 +12,14 @@ export default function AuthenticatedLayout({ header, children }) {
         useState(false);
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <nav className="border-b border-gray-100 bg-white">
+        <div className="min-h-screen bg-zinc-900 text-white">
+            <nav className="border-b border-zinc-700 bg-zinc-800">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
                                 <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                                    <ApplicationLogo className="block h-9 w-auto fill-current text-white" />
                                 </Link>
                             </div>
 
@@ -30,6 +30,24 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Dashboard
                                 </NavLink>
+
+                                {user.role === 'marketing' && (
+                                    <NavLink
+                                        href="/admin/promotions"
+                                        active={route().current('admin.promotions.*')}
+                                    >
+                                        Kontrol Promosi
+                                    </NavLink>
+                                )}
+
+                                {user.role === 'outlet' && (
+                                    <NavLink
+                                        href="/promotions"
+                                        active={route().current('promotions.*')}
+                                    >
+                                        Riwayat Promosi
+                                    </NavLink>
+                                )}
                             </div>
                         </div>
 
@@ -40,7 +58,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                         <span className="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                                className="inline-flex items-center rounded-md border border-transparent bg-zinc-800 px-3 py-2 text-sm font-medium leading-4 text-white hover:text-purple-300 focus:outline-none"
                                             >
                                                 {user.name}
 
@@ -85,7 +103,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                         (previousState) => !previousState,
                                     )
                                 }
-                                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
+                                className="inline-flex items-center justify-center rounded-md p-2 text-zinc-300 hover:bg-zinc-700 hover:text-white focus:bg-zinc-700 focus:text-white focus:outline-none"
                             >
                                 <svg
                                     className="h-6 w-6"
@@ -134,14 +152,26 @@ export default function AuthenticatedLayout({ header, children }) {
                         >
                             Dashboard
                         </ResponsiveNavLink>
+
+                        {user.role === 'marketing' && (
+                            <ResponsiveNavLink href="/admin/promotions">
+                                Kontrol Promosi
+                            </ResponsiveNavLink>
+                        )}
+
+                        {user.role === 'outlet' && (
+                            <ResponsiveNavLink href="/promotions">
+                                Riwayat Promosi
+                            </ResponsiveNavLink>
+                        )}
                     </div>
 
-                    <div className="border-t border-gray-200 pb-1 pt-4">
+                    <div className="border-t border-zinc-700 pb-1 pt-4">
                         <div className="px-4">
-                            <div className="text-base font-medium text-gray-800">
+                            <div className="text-base font-medium text-white">
                                 {user.name}
                             </div>
-                            <div className="text-sm font-medium text-gray-500">
+                            <div className="text-sm font-medium text-zinc-400">
                                 {user.email}
                             </div>
                         </div>
@@ -163,14 +193,14 @@ export default function AuthenticatedLayout({ header, children }) {
             </nav>
 
             {header && (
-                <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <header className="bg-zinc-800 shadow border-b border-zinc-700">
+                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-white">
                         {header}
                     </div>
                 </header>
             )}
 
-            <main>{children}</main>
+            <main className="bg-zinc-900 text-white">{children}</main>
         </div>
     );
 }
